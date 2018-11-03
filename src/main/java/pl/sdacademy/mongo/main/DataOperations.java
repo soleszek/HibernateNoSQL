@@ -18,12 +18,12 @@ import java.util.UUID;
 public class DataOperations {
 
     static MongoClient client = MongoUtils.getInstance().getClient();
-    static MongoDatabase database = client.getDatabase("testy_nasze");
-    static MongoCollection<Document> collection = database.getCollection("wartości");
+    static MongoDatabase database = client.getDatabase("abcd");
+    static MongoCollection<Document> collection = database.getCollection("abcd");
 
     public static void main(String[] args) throws InterruptedException {
         //insertData();
-        //printData(10);
+        //printData(1000);
         //findData("1d506545-f9e9-4711-b52c-9645dbe767b7");
         //findData(10, 10000);
         //findDataById("5bdd645df9f04849b4c771fd");
@@ -44,16 +44,23 @@ public class DataOperations {
 
         //insertDataWithDataAndRandom();
 
-        while(true) {
-            insertDataWithDataAndRandom();
-            Thread.sleep(1000);
-            printData(100);
+        /*while(true) {
+            insertDataToServer();
+            Thread.sleep(2000);
+            printData(1000);
+        }*/
+
+        while (true) {
+            long time = System.currentTimeMillis();
+            insertDataToServer();
+            System.out.println("Insert time: " + (System.currentTimeMillis() - time));
+            //Thread.sleep(1);
         }
     }
 
     private static void insertData() {
 
-        for (int i = 0; i < 100000; i++) {
+        for (int i = 0; i < 10000; i++) {
             //Document musi być org.bson
             Document doc = new Document("text", UUID.randomUUID().toString())
                     .append("value", (int) (Math.random() * 1000));
@@ -76,8 +83,20 @@ public class DataOperations {
                     .append("random_table", list)
                     .append("test", "dane me")
                     .append("name", "Sylwester");
+
             collection.insertOne(doc);
         }
+    }
+
+    private static void insertDataToServer() {
+        ArrayList<Document> writeList = new ArrayList<Document>();
+
+        for (int i = 0; i < 100000; i++) {
+
+            Document name = new Document("name", "Sylwester");
+            writeList.add(name);
+        }
+        collection.insertMany(writeList);
     }
 
     private static void printData(int limit) {
