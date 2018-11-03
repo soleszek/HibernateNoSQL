@@ -4,9 +4,11 @@ import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.MongoIterable;
+import com.mongodb.client.model.Filters;
 import org.bson.Document;
 import pl.sdacademy.mongo.utils.MongoUtils;
 
+import javax.print.Doc;
 import java.util.UUID;
 
 public class DataOperations {
@@ -16,13 +18,14 @@ public class DataOperations {
     static MongoCollection<Document> collection = database.getCollection("wartości");
 
     public static void main(String[] args) {
-        insertData();
+        //insertData();
         printData(10);
+        findData("1d506545-f9e9-4711-b52c-9645dbe767b7");
     }
 
     private static void insertData() {
 
-        for (int i = 0; i < 100; i++) {
+        for (int i = 0; i < 100000; i++) {
             //Document musi być org.bson
             Document doc = new Document("text", UUID.randomUUID().toString())
                     .append("value", (int)Math.random() * 1000);
@@ -35,5 +38,14 @@ public class DataOperations {
         for(Document doc : results) {
             System.out.println(doc.toJson());
         }
+    }
+
+    private static void findData(String text){
+        System.out.println("Found: ");
+        MongoIterable<Document> results = collection.find(Filters.eq("text", text));
+        for(Document doc : results) {
+            System.out.println(doc.toJson());
+        }
+
     }
 }
