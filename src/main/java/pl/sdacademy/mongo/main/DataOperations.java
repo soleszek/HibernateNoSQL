@@ -18,9 +18,10 @@ public class DataOperations {
     static MongoCollection<Document> collection = database.getCollection("wartości");
 
     public static void main(String[] args) {
-        //insertData();
+        insertData();
         printData(10);
-        findData("1d506545-f9e9-4711-b52c-9645dbe767b7");
+        //findData("1d506545-f9e9-4711-b52c-9645dbe767b7");
+        findData(10, 10000);
     }
 
     private static void insertData() {
@@ -28,7 +29,7 @@ public class DataOperations {
         for (int i = 0; i < 100000; i++) {
             //Document musi być org.bson
             Document doc = new Document("text", UUID.randomUUID().toString())
-                    .append("value", (int)Math.random() * 1000);
+                    .append("value", (int)(Math.random() * 1000));
             collection.insertOne(doc);
         }
     }
@@ -47,5 +48,19 @@ public class DataOperations {
             System.out.println(doc.toJson());
         }
 
+    }
+
+    private static void findData(Integer rangeMin, Integer rangeMax) {
+        System.out.println("Found in range (" + rangeMin + ", " + rangeMax + ")");
+        MongoIterable<Document> results = collection
+                .find(Filters.and(
+                        //greater than equal
+                        Filters.gte("value", rangeMin),
+                        //less than equal
+                        Filters.lte("value", rangeMax)
+                ));
+        for(Document doc : results) {
+            System.out.println(doc.toJson());
+        }
     }
 }
