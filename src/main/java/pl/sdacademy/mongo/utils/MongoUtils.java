@@ -9,7 +9,7 @@ public class MongoUtils {
 
     //MongoClients - fabryka obiektów
     private MongoUtils() {
-        client = MongoClients.create("mongodb://192.168.100.78:27017");
+        client = MongoClients.create("mongodb://localhost");
     }
 
     public static MongoUtils getInstance() {
