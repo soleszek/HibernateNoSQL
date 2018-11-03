@@ -18,8 +18,8 @@ public class Robot {
 
     public static void main(String[] args) throws IOException {
         //String host = "https://onet.pl";
-        String host = "https://nadzory-archeologiczne.pl";
-        Document result = Jsoup.connect(host).followRedirects(true).get();
+        //String host = "https://nadzory-archeologiczne.pl";
+        //Document result = Jsoup.connect(host).followRedirects(true).get();
         //System.out.println(result.outerHtml());
 
         //Elements urls = result.select("a");
@@ -28,8 +28,12 @@ public class Robot {
             String href = url.absUrl("href");
             System.out.println(href);
         }*/
-
-        searchText("arch");
+        MongoCollection<org.bson.Document> urlCollection = database.getCollection("url");
+        while(true) {
+            if (urlCollection.find(Filters.eq("used", false)).first() != null) {
+                searchText("nad");
+            }
+        }
     }
 
     private static void insertIfNotExist(Elements urls) {
@@ -42,6 +46,8 @@ public class Robot {
                 org.bson.Document newUrl = new org.bson.Document("url", href)
                         .append("used", false);
                 urlCollection.insertOne(newUrl);
+            } else {
+                break;
             }
         }
     }
@@ -63,7 +69,8 @@ public class Robot {
         if(position > 0) {
             org.bson.Document foundItem = new org.bson.Document("url", url.getString("url"))
                     .append("content", result.text())
-                    .append("foundAt", position);
+                    .append("foundAt", position)
+                    .append("searchText", text);
             foundCollection.insertOne(foundItem);
         }
 
