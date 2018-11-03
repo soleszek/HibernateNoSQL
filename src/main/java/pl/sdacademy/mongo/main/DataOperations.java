@@ -11,6 +11,8 @@ import org.bson.types.ObjectId;
 import pl.sdacademy.mongo.utils.MongoUtils;
 
 import javax.print.Doc;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.UUID;
 
 public class DataOperations {
@@ -19,7 +21,7 @@ public class DataOperations {
     static MongoDatabase database = client.getDatabase("testy_nasze");
     static MongoCollection<Document> collection = database.getCollection("wartości");
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws InterruptedException {
         //insertData();
         //printData(10);
         //findData("1d506545-f9e9-4711-b52c-9645dbe767b7");
@@ -36,9 +38,17 @@ public class DataOperations {
         //delete(11, 12);
         //findData(11, 12);
 
-        findDataById("5bdd6eb1f9f0484c94746425");
-        deleteById("5bdd6eb1f9f0484c94746425");
-        findDataById("5bdd6eb1f9f0484c94746425");
+        //findDataById("5bdd6eb1f9f0484c94746425");
+        //deleteById("5bdd6eb1f9f0484c94746425");
+        //findDataById("5bdd6eb1f9f0484c94746425");
+
+        //insertDataWithDataAndRandom();
+
+        while(true) {
+            insertDataWithDataAndRandom();
+            Thread.sleep(1000);
+            printData(100);
+        }
     }
 
     private static void insertData() {
@@ -47,6 +57,25 @@ public class DataOperations {
             //Document musi być org.bson
             Document doc = new Document("text", UUID.randomUUID().toString())
                     .append("value", (int) (Math.random() * 1000));
+            collection.insertOne(doc);
+        }
+    }
+
+    private static void insertDataWithDataAndRandom() {
+
+        for (int i = 0; i < 2; i++) {
+
+            ArrayList<Integer> list = new ArrayList<Integer>();
+            for(int k=0; k < (int) (Math.random() * 10); k++) {
+                list.add((int) (Math.random() * 1000));
+            }
+            //Document musi być org.bson
+            Document doc = new Document("text", UUID.randomUUID().toString())
+                    .append("value", (int) (Math.random() * 1000))
+                    .append("date", new Date())
+                    .append("random_table", list)
+                    .append("test", "dane me")
+                    .append("name", "Sylwester");
             collection.insertOne(doc);
         }
     }
