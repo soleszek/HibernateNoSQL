@@ -3,6 +3,7 @@ package pl.sdacademy.mongo.main;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Filters;
+import com.mongodb.client.model.Updates;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -21,14 +22,14 @@ public class Robot {
         Document result = Jsoup.connect(host).followRedirects(true).get();
         //System.out.println(result.outerHtml());
 
-        Elements urls = result.select("a");
+        //Elements urls = result.select("a");
 
         /*for(Element url : urls) {
             String href = url.absUrl("href");
             System.out.println(href);
         }*/
 
-        insertIfNotExist(urls);
+        searchText("arch");
     }
 
     private static void insertIfNotExist(Elements urls) {
@@ -44,4 +45,33 @@ public class Robot {
             }
         }
     }
+
+    private static void searchText(String text) throws IOException {
+        MongoCollection<org.bson.Document> urlCollection = database.getCollection("urls");
+        MongoCollection<org.bson.Document> foundCollection = database.getCollection("found");
+
+        org.bson.Document url = urlCollection
+                .find(Filters.eq("used", false))
+                .first();
+
+        Document result = Jsoup
+                //getString - wyciąganie pojedynczego stringa z urla (z adresu)
+                .connect(url.getString("url"))
+                .followRedirects(true)
+                .get();
+        Integer position = result.text().indexOf(text);
+        if(position > 0) {
+            org.bson.Document foundItem = new org.bson.Document("url", url.getString("url"))
+                    .append("content", result.text())
+                    .append("foundAt", position);
+            foundCollection.insertOne(foundItem);
+        }
+
+        Object id = url.getObjectId("_id");
+        urlCollection
+                .updateOne(Filters.eq("_id", id), Updates.set("used", true));
+
+        insertIfNotExist(result.select("a"));
+    }
+
 }
