@@ -28,9 +28,17 @@ public class DataOperations {
         //update("5bdd645df9f04849b4c771fd", "mój tekst do aktualizacji");
         //findDataById("5bdd645df9f04849b4c771fd");
 
-        findData(11, 12);
-        update(11, 12, "nowy tekst");
-        findData(11, 12);
+        //findData(11, 12);
+        //update(11, 12, "nowy tekst");
+        //findData(11, 12);
+
+        //findData(11, 12);
+        //delete(11, 12);
+        //findData(11, 12);
+
+        findDataById("5bdd6eb1f9f0484c94746425");
+        deleteById("5bdd6eb1f9f0484c94746425");
+        findDataById("5bdd6eb1f9f0484c94746425");
     }
 
     private static void insertData() {
@@ -106,9 +114,20 @@ public class DataOperations {
 
     private static void deleteById(String id) {
 
+        System.out.println("Deleted id=" + id);
+        collection
+                .deleteOne(
+                        Filters.eq("_id", new ObjectId("5bd1c35a1e657c8611942ec6"))
+                );
     }
 
     private static void delete(Integer rangeMin, Integer rangeMax) {
-        
+
+        System.out.println("Deleted in range (" + rangeMin + ", " + rangeMax + ")");
+        collection
+                .deleteMany(
+                        Filters.and(
+                                Filters.gte("value", rangeMin),
+                                Filters.lte("value", rangeMax)));
     }
 }
